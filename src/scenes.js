@@ -27,13 +27,31 @@ Crafty.scene("loading", function() {
 
 Crafty.scene("main", function() {
     var i;
-    dude = Crafty.e("Dude").at(5, 5);
-    
-    //Crafty.viewport.centerOn(dude, 2); 
-    //Crafty.viewport.follow(dude, 0, 0); 
+    var speed = 5;
+    dude = Crafty.e("Dude").at(0, 0);
+    Crafty.e("Grass").at(0, 2);
+    Crafty.addEvent(Crafty, Crafty.stage.elem, 'mousedown', function(e) {
+        console.log(e.clientY);
+        console.log(Crafty.viewport.bounds);
+        if (Crafty.viewport.height - e.clientY < 50) {
+            if (e.clientX > 450) {
+                dude._movement.x = speed;
+            } else {
+                dude._movement.x = -speed;
+            }
+        } else {
+            dude._up = true;
+	}
+    });
+    Crafty.addEvent(Crafty, Crafty.stage.elem, 'mouseup', function(e) {
+        dude._movement.x = 0;
+    });
+
     for (i = 0; i < Game.map_grid.width; i++) {
-        Crafty.e("Platform").at(i, 20);
-        Crafty.e("Platform").at(i, Math.floor(Math.random() * 7 + 10));
+        Crafty.e("Lava").at(i, 5);
+	if (Math.random() > 0.4) {
+            Crafty.e("Grass").at(i, Math.floor(Math.random() * 4));
+        }
     }
     Crafty.viewport.follow(dude, 0, 0); 
 });

@@ -27,11 +27,12 @@ Crafty.c("Dude", {
     init: function() {
         this.facing = "right";
         this.requires("Actor, Twoway, Gravity, Collision, SpriteAnimation, p1_stand")
-            .twoway(5, 7)
+            .twoway(10, 12)
             .stopOnSolids()
             .gravity("Platform")
-            .gravityConst(0.3)
+            .gravityConst(0.4)
             .reel("p1_walk", 1000, Game.reels.p1_walk);
+
     
         this.bind('NewDirection', function(data) {
             var staticComponents = "p1_stand,p1_jump";
@@ -60,10 +61,6 @@ Crafty.c("Dude", {
         });
     },
 
-    face: function(direction) {
-    },
-
-
     stopOnSolids: function() {
         this.onHit('Solid', this.stopMovement);
 
@@ -89,6 +86,21 @@ Crafty.c("Dude", {
 
 Crafty.c("Platform", {
     init: function() {
-        this.requires("Actor, Solid, grassMid");
+        this.requires("Actor, Solid");
+    }
+});
+Crafty.c("Grass", {
+    init: function() {
+        this.requires("Platform, grassMid");
+    }
+});
+Crafty.c("Lava", {
+    init: function() {
+        this.requires("Platform, liquidLavaTop_mid");
+    }
+});
+Crafty.c("Snow", {
+    init: function() {
+        this.requires("Actor, Solid, snowMid");
     }
 });
