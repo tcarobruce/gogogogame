@@ -25,40 +25,31 @@ Crafty.c("Actor", {
 
 Crafty.c("Dude", {
     init: function() {
-        this.facing = "right";
         this.requires("Actor, Twoway, Gravity, Collision, SpriteAnimation, p1_stand")
             .twoway(10, 12)
             .stopOnSolids()
-            .gravity("Platform")
-            .gravityConst(0.4)
+            .directionFacing()
+            .gravity("Tile")
+            .gravityConst(Game.world.gravity)
             .reel("p1_walk", 1000, Game.reels.p1_walk);
+    },
 
-    
+    directionFacing: function() {
         this.bind('NewDirection', function(data) {
-            var staticComponents = "p1_stand,p1_jump";
-            if (data.y > 0 || data.y < 0) {
-                this.animate();
-                dude.pauseAnimation();
-                dude.resetAnimation();
-            } else if (data.x > 0) {
-                this.animate('p1_walk', -1);
-                //dude.face("right");
-                if (this.facing !== "right") {
-                    this.flip("x");
-                    this.facing = "right";
+            if (data.x > 0) {
+                this.animate("p1_walk", -1);
+                if (this._flipX) {
+                    this.unflip("X");
                 }
-            } else if (data.x < 0) {
-                this.animate('p1_walk', -1);
-                //dude.face("left");
-                if (this.facing !== "left") {
-                    this.flip("x");
-                    this.facing = "left";
+            } else if(data.x < 0) {
+                this.animate("p1_walk", -1);
+                if (!this._flipX) {
+                   this.flip("X");
                 }
             } else {
-                dude.pauseAnimation();
-                dude.resetAnimation();
-            }
+            } 
         });
+        return this;
     },
 
     stopOnSolids: function() {
@@ -70,13 +61,9 @@ Crafty.c("Dude", {
     stopMovement: function() {
         if (this._movement) {
             this.x -= this._movement.x;
-            if (this.hit('Solid') != false) {
-                this.x += this._movement.x;
-                this.y -= this._movement.y;
-                if (this.hit('Solid') != false) {
-                    this.x -= this._movement.x;
-                    this.y -= this._movement.y;
-                }
+            if (this.hit('Solid')) {
+                this.y += this._jumpSpeed;
+                this._up = false;
             }
         } else {
             this._speed = 0;
@@ -84,23 +71,31 @@ Crafty.c("Dude", {
     }
 });
 
-Crafty.c("Platform", {
+Crafty.c("Tile", {
     init: function() {
         this.requires("Actor, Solid");
     }
 });
 Crafty.c("Grass", {
     init: function() {
-        this.requires("Platform, grassMid");
+        this.requires("Tile, grassMid");
     }
 });
 Crafty.c("Lava", {
     init: function() {
-        this.requires("Platform, liquidLavaTop_mid");
+        this.requires("Tile, liquidLavaTop_mid");
     }
 });
 Crafty.c("Snow", {
     init: function() {
         this.requires("Actor, Solid, snowMid");
+    }
+});
+Crafty.c("Log", {
+    init: function(message) {
+        var dude = Crafty("Dude");
+        this.requires("2d, Canvas, Text")
+            .attr({x: dude.x + 20, y: dude.y + 80})
+            .textColor("#ffffff", 1);
     }
 });
