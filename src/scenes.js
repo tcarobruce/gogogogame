@@ -27,30 +27,32 @@ Crafty.scene("loading", function() {
 
 Crafty.scene("main", function() {
     var i;
-    var speed = 5;
+    Game.log = function(message) { Crafty.e("Log").text(message); };
     dude = Crafty.e("Dude").at(0, 0);
     Crafty.e("Grass").at(0, 2);
+
     Crafty.addEvent(Crafty, Crafty.stage.elem, 'mousedown', function(e) {
         console.log(e.clientY);
         console.log(Crafty.viewport.bounds);
         if (Crafty.viewport.height - e.clientY < 50) {
-            if (e.clientX > 450) {
-                dude._movement.x = speed;
+            if (e.clientX > Crafty.viewport.width / 2) {
+                dude._movement.x = Game.player.speed;
             } else {
-                dude._movement.x = -speed;
+                dude._movement.x = -Game.player.speed;
             }
         } else {
             dude._up = true;
 	}
     });
+
     Crafty.addEvent(Crafty, Crafty.stage.elem, 'mouseup', function(e) {
         dude._movement.x = 0;
     });
 
     for (i = 0; i < Game.map_grid.width; i++) {
-        Crafty.e("Lava").at(i, 5);
-	if (Math.random() > 0.4) {
-            Crafty.e("Grass").at(i, Math.floor(Math.random() * 4));
+        Crafty.e("Lava").at(i, Game.map_grid.height);
+	if (i > 0 && Math.random() < Game.world.block_frequency) {
+            Crafty.e("Grass").at(i, Math.floor(Math.random() * Game.map_grid.height));
         }
     }
     Crafty.viewport.follow(dude, 0, 0); 
